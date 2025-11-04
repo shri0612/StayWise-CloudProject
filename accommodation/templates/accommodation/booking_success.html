@@ -1,0 +1,49 @@
+{% extends 'accommodation/base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+  <div class="card shadow-lg border-0 rounded-4 text-center" style="width: 420px;">
+    <div class="card-body p-4">
+      <div class="text-success mb-3">
+        <i class="bi bi-check-circle-fill" style="font-size: 50px;"></i>
+      </div>
+
+      <h3 class="fw-bold mb-2">Booking Confirmed!</h3>
+      <p class="text-muted mb-4">Thank you, {{ booking.name }} 🎉</p>
+
+      <div class="border rounded-4 p-3 text-start bg-light mb-4">
+        <p class="mb-1"><strong>🏠 Room:</strong> {{ booking.room_name }}</p>
+        <p class="mb-1"><strong>📅 Days:</strong> {{ booking.days }}</p>
+        <p class="mb-1"><strong>👥 People:</strong> {{ booking.people }}</p>
+        <p class="mb-1"><strong>💰 Base Price:</strong> €{{ booking.price_before_discount }}</p>
+
+        {% if booking.discount_percent > 0 %}
+          <p class="mb-1 text-success fw-semibold">
+            🎉 Discount: {{ booking.discount_percent }}% 
+            (Saved €{{ booking.discount_amount }})
+          </p>
+          <p class="mb-1 text-muted small">
+            💡 {{ booking.discount_reason }}
+          </p>
+        {% else %}
+          <p class="text-muted small">No discounts applied</p>
+        {% endif %}
+
+        <hr>
+        <p class="mb-1 fw-bold">
+          ✅ Final Price: <span class="text-success">€{{ booking.final_price }}</span>
+        </p>
+        <p class="mb-0"><strong>📆 Booked On:</strong> {{ booking.booked_on }}</p>
+      </div>
+
+      <a href="{% url 'room_list' %}" class="btn btn-primary w-100 mb-2">
+        Back to Rooms
+      </a>
+      <a href="/manager_dashboard/" class="btn btn-outline-secondary w-100">
+        Manager Portal
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,369 @@
+{% extends 'accommodation/manager_base.html' %}
+{% block content %}
+
+<!-- ====================== STYLES ====================== -->
+<style>
+  .chart-wrapper {
+    width: 100%;
+    height: 60vh;
+    padding: 1rem;
+  }
+
+  .card {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  h2, h5, h6 {
+    color: #2e2e48;
+  }
+
+  .text-primary {
+    color: #005c97 !important;
+  }
+
+  .text-info {
+    color: #008cba !important;
+  }
+
+  .text-danger {
+    color: #e74c3c !important;
+  }
+
+  .text-muted {
+    color: #6c757d !important;
+  }
+
+  @media (max-width: 768px) {
+    .chart-wrapper {
+      height: 320px;
+    }
+  }
+  .table-success {
+  background-color: #e6ffed !important;
+}
+</style>
+
+<!-- ====================== PAGE CONTENT ====================== -->
+<div class="container-fluid">
+
+  <!-- 🔹 Page Title -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-gradient">📊 Manager Dashboard</h2>
+  </div>
+
+  <!-- 🔹 Analytics Chart Section -->
+ <div class="card chart-card mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h5 class="fw-bold text-secondary mb-2">📈 Room & Booking Overview</h5>
+    <select class="form-select w-auto shadow-sm" onchange="changeChartType(this.value)">
+      <option value="bar" selected>Bar Chart</option>
+      <option value="pie">Pie Chart</option>
+      <option value="line">Line Chart</option>
+      <option value="doughnut">Doughnut Chart</option>
+    </select>
+  </div>
+  <div class="chart-wrapper">
+    <canvas id="managerChart"></canvas>
+  </div>
+</div>
+
+
+  <!-- 🔹 Summary Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <h6 class="text-muted">Total Rooms</h6>
+        <h3 class="fw-bold text-primary">{{ summary.total_rooms }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <h6 class="text-muted">Fully Booked Rooms</h6>
+        <h3 class="fw-bold text-danger">{{ summary.fully_booked_rooms }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <h6 class="text-muted">Total Bookings</h6>
+        <h3 class="fw-bold text-info">{{ summary.total_bookings }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Rooms Section -->
+  <div id="rooms" class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-secondary">🏠 Rooms</h5>
+        <a href="{% url 'add_room' %}" class="btn btn-sm btn-primary">
+          <i class="bi bi-plus-lg me-1"></i> Add Room
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Capacity</th>
+              <th>Price (€)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for room in rooms %}
+              <tr>
+                <td>{{ room.name }}</td>
+                <td>{{ room.capacity }}</td>
+                <td>{{ room.price }}</td>
+                <td>
+                  <a href="{% url 'edit_room' room.room_id %}" class="btn btn-sm btn-outline-warning">
+                    <i class="bi bi-pencil-square"></i>
+                  </a>
+                  <a href="{% url 'delete_room' room.room_id %}"
+                     class="btn btn-sm btn-outline-danger"
+                     onclick="return confirm('Are you sure you want to delete this room?')">
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-muted text-center">No rooms found</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<!-- 🔹 Bookings Section -->
+<!-- 🔹 Bookings Section -->
+<div id="bookings" class="card shadow-sm border-0">
+  <div class="card-body">
+    <h5 class="fw-bold text-secondary mb-3">📘 Recent Bookings</h5>
+
+    <div class="table-responsive">
+      <table class="table align-middle table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Room</th>
+            <th>Days</th>
+            <th>People</th>
+            <th>Base (€)</th>
+            <th>Final (€)</th>
+            <th>Discount (%)</th>
+            <th>Saved (€)</th>
+            <th>Reason</th>
+            <th>Payment</th>
+            <th>Status</th>
+            <th>Booked On</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for b in bookings %}
+          <tr {% if b.discount_percent > 0 %} class="table-success" {% endif %}>
+            <td>{{ b.name }}</td>
+            <td>{{ b.email }}</td>
+            <td>{{ b.room_name }}</td>
+            <td>{{ b.days }}</td>
+            <td>{{ b.people }}</td>
+
+            <!-- 💰 Base Price -->
+            <td>
+              {% if b.price_before_discount %}
+                €{{ b.price_before_discount|floatformat:2 }}
+              {% else %}
+                <span class="text-muted">–</span>
+              {% endif %}
+            </td>
+
+            <!-- ✅ Final Price -->
+            <td class="fw-semibold text-success">
+              €{{ b.final_price|default:"0"|floatformat:2 }}
+            </td>
+
+            <!-- 🎯 Discount % -->
+            <td>
+              {% if b.discount_percent > 0 %}
+                <span class="text-success fw-semibold">
+                  {{ b.discount_percent|floatformat:1 }}%
+                </span>
+              {% else %}
+                <span class="text-muted">–</span>
+              {% endif %}
+            </td>
+
+            <!-- 💸 Amount Saved -->
+            <td>
+              {% if b.discount_amount > 0 %}
+                <span class="text-success fw-semibold">
+                  €{{ b.discount_amount|floatformat:2 }}
+                </span>
+              {% else %}
+                <span class="text-muted">–</span>
+              {% endif %}
+            </td>
+
+            <!-- 🏷️ Discount Reason -->
+            <td class="text-muted small">
+              {% if b.discount_reason %}
+                {{ b.discount_reason }}
+              {% else %}
+                <span class="text-muted">–</span>
+              {% endif %}
+            </td>
+
+            <!-- 💳 Payment Method -->
+            <td>{{ b.payment_method|default:"-" }}</td>
+
+            <!-- 🧾 Payment Status -->
+            <td>
+              {% if b.payment_status == "Paid" %}
+                <span class="badge bg-success">Paid</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">Unpaid</span>
+              {% endif %}
+            </td>
+
+            <!-- ⏰ Booked On -->
+            <td class="text-muted small">{{ b.booked_on }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="13" class="text-muted text-center py-4">No bookings found</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<!-- ====================== CHART.JS ====================== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const ctx = document.getElementById("managerChart").getContext("2d");
+
+  const totalRooms = {{ summary.total_rooms|default:0 }};
+  const fullRooms = {{ summary.fully_booked_rooms|default:0 }};
+  const totalBookings = {{ summary.total_bookings|default:0 }};
+
+  const dataValues = [totalRooms, fullRooms, totalBookings];
+  const labels = ["Total Rooms", "Fully Booked Rooms", "Total Bookings"];
+
+  let chartInstance;
+
+  function createGradients(ctx) {
+    // ✅ Create three smooth vertical gradients for the bars
+    const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient1.addColorStop(0, "rgba(0, 172, 193, 0.9)");   // light teal
+    gradient1.addColorStop(1, "rgba(0, 92, 151, 0.9)");   // dark teal-blue
+
+    const gradient2 = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient2.addColorStop(0, "rgba(255, 112, 112, 0.9)"); // coral
+    gradient2.addColorStop(1, "rgba(239, 83, 80, 0.9)");   // deep red
+
+    const gradient3 = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient3.addColorStop(0, "rgba(255, 213, 79, 0.9)");  // light yellow
+    gradient3.addColorStop(1, "rgba(255, 160, 0, 0.9)");   // amber
+
+    return [gradient1, gradient2, gradient3];
+  }
+
+  function renderChart(type) {
+    if (chartInstance) chartInstance.destroy();
+
+    const [gradient1, gradient2, gradient3] = createGradients(ctx);
+
+    chartInstance = new Chart(ctx, {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "SmartHost Statistics",
+          data: dataValues,
+          backgroundColor: [gradient1, gradient2, gradient3],
+          borderColor: ["#008cba", "#e74c3c", "#f39c12"],
+          borderWidth: 2,
+          borderRadius: 10,
+          fill: type === "line" ? false : true,
+          tension: 0.3,
+          pointBackgroundColor: "#fff"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false, // ✅ full-width control
+        resizeDelay: 200,
+        layout: {
+          padding: { left: 0, right: 0, top: 20, bottom: 10 }
+        },
+        animation: {
+          duration: 1000,
+          easing: "easeOutQuart"
+        },
+        plugins: {
+          legend: { 
+            display: type !== "bar",
+            labels: { color: "#444", font: { size: 13 } }
+          },
+          tooltip: {
+            backgroundColor: "rgba(15, 23, 42, 0.9)",
+            borderColor: "#0ea5e9",
+            borderWidth: 1,
+            titleFont: { size: 14, weight: "bold" },
+            bodyFont: { size: 13 }
+          },
+          title: {
+            display: true,
+            text: "Room & Booking Overview (Live Data)",
+            color: "#1e293b",
+            font: { size: 16, weight: "bold" },
+            padding: { bottom: 20 }
+          }
+        },
+        scales: (type === "bar" || type === "line")
+          ? {
+              x: {
+                grid: { color: "rgba(0,0,0,0.05)" },
+                ticks: { color: "#4b5563", font: { size: 12 } }
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1, color: "#4b5563", font: { size: 12 } },
+                grid: { color: "rgba(0,0,0,0.05)" }
+              }
+            }
+          : {}
+      }
+    });
+  }
+
+  // ✅ Initial render
+  renderChart("bar");
+
+  // ✅ Dropdown switcher
+  window.changeChartType = renderChart;
+
+  // ✅ Re-render on resize (to rebuild gradients)
+  window.addEventListener("resize", () => {
+    renderChart(chartInstance.config.type);
+  });
+});
+</script>
+
+
+
+{% endblock %}

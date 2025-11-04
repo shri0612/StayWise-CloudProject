@@ -1,0 +1,165 @@
+{% extends 'accommodation/base.html' %}
+{% block content %}
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fc;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🔹 Split Layout */
+.login-container {
+  display: flex;
+  min-height: 90vh;
+}
+
+/* Left Section */
+.left-section {
+  flex: 1;
+  background: linear-gradient(135deg, #005c97 0%, #008cba 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem;
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
+
+.left-section h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.left-section p {
+  font-size: 1rem;
+  color: #e3f2fd;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+/* Right Section */
+.right-section {
+  flex: 1;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 380px;
+}
+
+.form-box h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 0.5rem;
+}
+
+.form-box p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+.form-box a {
+  color: #0072ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+.form-box a:hover {
+  text-decoration: underline;
+}
+
+/* Inputs */
+.form-control {
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  border: 1px solid #cfd8e3;
+}
+.form-control:focus {
+  border-color: #0072ff;
+  box-shadow: 0 0 5px rgba(0, 114, 255, 0.25);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(90deg, #0072ff, #7a5cff);
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  width: 100%;
+  transition: 0.3s;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(122, 92, 255, 0.35);
+}
+
+/* Forgot Password */
+.text-muted a {
+  color: #0072ff;
+  text-decoration: none;
+}
+.text-muted a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .login-container {
+    flex-direction: column;
+  }
+  .left-section {
+    border-radius: 0;
+    text-align: center;
+    align-items: center;
+    padding: 3rem 2rem;
+  }
+}
+</style>
+
+<div class="login-container">
+  <!-- Left Side -->
+  <div class="left-section">
+    <h1>Welcome to StayWise 👋</h1>
+    <p>Find and manage your student accommodation with ease. StayWise helps you connect, book, and live smarter — built for students, powered by simplicity.</p>
+  </div>
+
+  <!-- Right Side -->
+  <div class="right-section">
+    <div class="form-box">
+      <h2>Welcome Back!</h2>
+      <p>Don’t have an account? <a href="{% url 'register_user' %}">Create one now</a></p>
+
+      <form method="POST">
+        {% csrf_token %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-danger py-2 text-center">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <input type="text" class="form-control" name="username" placeholder="Email or Username" required>
+        <input type="password" class="form-control" name="password" placeholder="Password" required>
+
+        <button type="submit" class="btn btn-primary mt-2">Login</button>
+      </form>
+
+      <p class="text-center text-muted mt-3">
+        Forgot your password? <a href="#">Click here</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

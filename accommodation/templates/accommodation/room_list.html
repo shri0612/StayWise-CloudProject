@@ -1,0 +1,171 @@
+{% extends 'accommodation/base.html' %}
+{% block content %}
+
+{% if user.is_authenticated %}
+  {% with user.profile.role as role %}
+    <h2 class="text-center fw-bold mt-3 text-dark">
+      {% if role|lower == "manager" %}
+        👋 Welcome back, Manager!
+      {% else %}
+        👋 Welcome back, {{ user.username|title }}!
+      {% endif %}
+    </h2>
+  {% endwith %}
+  
+  <h2 class="text-center mb-4">
+    🏠 <b>Available Rooms</b>
+  </h2>
+{% endif %}
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    {% for room in rooms %}
+      <div class="col-md-4 col-sm-6 mb-4">
+        <div class="room-card card border-0 shadow-lg rounded-4 overflow-hidden">
+          
+          <!-- Image Carousel -->
+          <div id="carousel{{ room.room_id }}" 
+               class="carousel slide"
+               data-bs-ride="false" 
+               data-bs-interval="false">
+            
+            <div class="carousel-inner">
+              {% for img_url in room.images %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                  <img src="{{ img_url }}" alt="{{ room.name }}" class="d-block w-100 room-img">
+                </div>
+              {% endfor %}
+            </div>
+
+            {% if room.images|length > 1 %}
+              <!-- Prev Button -->
+              <button class="carousel-control-prev visible-carousel-btn" 
+                      type="button" 
+                      data-bs-target="#carousel{{ room.room_id }}" 
+                      data-bs-slide="prev">
+                <span class="carousel-nav-icon">
+                  <i class="bi bi-chevron-left"></i>
+                </span>
+              </button>
+
+              <!-- Next Button -->
+              <button class="carousel-control-next visible-carousel-btn" 
+                      type="button" 
+                      data-bs-target="#carousel{{ room.room_id }}" 
+                      data-bs-slide="next">
+                <span class="carousel-nav-icon">
+                  <i class="bi bi-chevron-right"></i>
+                </span>
+              </button>
+            {% endif %}
+          </div>
+
+          <!-- Room Info -->
+          <div class="card-body p-4">
+            <h5 class="card-title fw-semibold text-dark mb-2">{{ room.name }}</h5>
+            <div class="d-flex justify-content-between align-items-center mb-2 text-muted small">
+              <span><i class="bi bi-people"></i> {{ room.capacity }} guests</span>
+              <span><i class="bi bi-cash-stack"></i> €{{ room.price }}/day</span>
+            </div>
+
+            <p class="mb-3">
+              <strong>Status:</strong>
+              {% if room.available %}
+                <span class="badge bg-success-subtle text-success fw-semibold px-3 py-2">Available</span>
+              {% else %}
+                <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2">Full</span>
+              {% endif %}
+            </p>
+
+            <a href="{% url 'book_room' room.room_id %}" class="btn btn-gradient w-100 py-2">
+              <i class="bi bi-calendar-check"></i> Book Now
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center text-muted mt-5">No rooms available at the moment.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+/* ===========================
+   🌿 Premium Room Card Styles
+   =========================== */
+.room-card {
+  transition: box-shadow 0.3s ease;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 1rem;
+}
+.room-card:hover {
+  transform: none; /* No movement */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Room Images */
+.room-img {
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.6s ease-in-out;
+}
+
+/* Carousel Transition Smoothness */
+.carousel-item {
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+/* Carousel Buttons (visible and elegant) */
+.visible-carousel-btn {
+  width: 48px;
+  height: 48px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1);
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+.visible-carousel-btn:hover {
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  color: #fff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Icon inside button */
+.carousel-nav-icon i {
+  font-size: 1.3rem;
+  color: #000;
+  position: relative;
+  top: 1px;
+}
+.visible-carousel-btn:hover .carousel-nav-icon i {
+  color: #fff;
+}
+
+/* Gradient Book Button */
+.btn-gradient {
+  background: linear-gradient(90deg, #007bff, #6f42c1);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  transition: 0.3s;
+}
+.btn-gradient:hover {
+  background: linear-gradient(90deg, #0056d2, #4b25a3);
+  color: #fff;
+}
+
+/* Subtle badge colors */
+.bg-success-subtle {
+  background-color: rgba(25,135,84,0.15);
+}
+.bg-danger-subtle {
+  background-color: rgba(220,53,69,0.15);
+}
+</style>
+
+{% endblock %}

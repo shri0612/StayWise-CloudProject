@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <body style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px;">
+    <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <h2 style="color:#005c97;">🎉 Booking Confirmed!</h2>
+      <p>Hi {{ booking.name }},</p>
+      <p>Thank you for booking with <strong>StayWise</strong>!</p>
+
+      <ul style="line-height:1.8;">
+        <li>🏠 <strong>Room:</strong> {{ booking.room_name }}</li>
+        <li>👥 <strong>People:</strong> {{ booking.people }}</li>
+        <li>📅 <strong>Days:</strong> {{ booking.days }}</li>
+        <li>💰 <strong>Price:</strong> €{{ booking.final_price }}</li>
+        <li>🎁 <strong>Discount:</strong> {{ booking.discount_percent }}% ({{ booking.discount_reason }})</li>
+      </ul>
+
+      <p style="margin-top:20px;">We look forward to hosting you soon!</p>
+      <p style="color:#6c757d;">Best regards,<br>Team StayWise</p>
+    </div>
+  </body>
+</html>

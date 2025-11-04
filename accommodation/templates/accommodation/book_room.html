@@ -1,0 +1,79 @@
+{% extends 'accommodation/base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="card shadow border-0 rounded-4" style="width: 420px;">
+    <div class="card-body p-4">
+      <h3 class="text-center mb-4 fw-semibold">
+        🏡 Book: <span class="text-primary">{{ room.name }}</span>
+      </h3>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <!-- Full Name -->
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          {{ form.name|add_class:"form-control" }}
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label">Email Address</label>
+          {{ form.email|add_class:"form-control" }}
+        </div>
+
+        <!-- ✅ Check-in Date -->
+        <div class="mb-3">
+          <label class="form-label">Check-in Date</label>
+          {{ form.checkin_date|add_class:"form-control" }}
+        </div>
+
+        <!-- ✅ Check-out Date -->
+        <div class="mb-3">
+          <label class="form-label">Check-out Date</label>
+          {{ form.checkout_date|add_class:"form-control" }}
+        </div>
+
+        <!-- Number of Days -->
+        <div class="mb-3">
+          <label class="form-label">Number of Days</label>
+          {{ form.days|add_class:"form-control" }}
+        </div>
+
+        <!-- Number of People -->
+        <div class="mb-3">
+          <label class="form-label">Number of People</label>
+          {{ form.people|add_class:"form-control" }}
+          <small class="text-muted">Max allowed: {{ room.capacity }}</small>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="mb-3">
+          <label class="form-label">Payment Method</label>
+          <select class="form-select" name="payment_method" required>
+            <option value="Cash on Arrival">Cash on Arrival</option>
+            <option value="Online">Online</option>
+          </select>
+        </div>
+
+        <!-- Confirm Button -->
+        <button type="submit" class="btn btn-primary w-100 mt-2">
+          <i class="bi bi-check-circle"></i> Confirm Booking
+        </button>
+
+        <!-- Back to Rooms -->
+        <a href="{% url 'room_list' %}" class="btn btn-outline-secondary w-100 mt-2">
+          Back to Rooms
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

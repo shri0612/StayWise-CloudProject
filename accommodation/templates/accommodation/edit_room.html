@@ -1,0 +1,54 @@
+{% extends 'accommodation/base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-sm border-0" style="max-width: 600px; margin: auto;">
+    <div class="card-body">
+      <h4 class="text-center mb-4 text-primary">Edit Room</h4>
+
+      <!-- Update room details -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Room Name</label>
+          <input type="text" name="name" class="form-control" value="{{ room.name }}" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Capacity</label>
+          <input type="number" name="capacity" class="form-control" min="1" value="{{ room.capacity }}" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Price per Day (€)</label>
+          <input type="number" name="price" class="form-control" step="0.01" value="{{ room.price }}" required>
+        </div>
+
+        <!-- Image Upload Section -->
+        <div class="mb-3">
+          <label class="form-label">Upload New Images (optional)</label>
+          <input type="file" name="images" multiple class="form-control">
+          <small class="text-muted">You can select multiple images.</small>
+        </div>
+
+        <button type="submit" class="btn btn-warning w-100">Update Room</button>
+        <a href="{% url 'manager_dashboard' %}" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+      </form>
+
+      <!-- ✅ Show Existing Images Section (paste here) -->
+      <hr class="my-4">
+      <h6 class="text-center text-secondary">Existing Images</h6>
+      <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+        {% if room.images %}
+          {% for img in room.images %}
+            <div class="text-center">
+              <img src="{{ img }}" alt="Room Image" class="rounded shadow-sm"
+                   style="width:120px; height:100px; object-fit:cover;">
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small">No images uploaded yet.</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
