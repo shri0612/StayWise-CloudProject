@@ -1,0 +1,68 @@
+{% extends 'accommodation/base.html' %}
+{% block content %}
+
+<div class="container mt-5 mb-5">
+  <h2 class="text-center fw-bold text-dark mb-4">📖 My Bookings</h2>
+
+  {% if bookings %}
+    <div class="row justify-content-center">
+      {% for booking in bookings %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-4">
+              
+              <h5 class="fw-semibold text-dark mb-2">
+                🏠 Room ID: {{ booking.room_id }}
+              </h5>
+              <p class="text-muted mb-1">
+                <i class="bi bi-calendar-check"></i> <b>Booked On:</b> {{ booking.booked_on }}
+              </p>
+              <p class="text-muted mb-1">
+                <i class="bi bi-envelope"></i> <b>Booked For:</b> {{ booking.email }}
+              </p>
+              <p class="text-muted mb-1">
+                <i class="bi bi-people"></i> <b>Guests:</b> {{ booking.people }}
+              </p>
+              <p class="text-muted mb-1">
+                <i class="bi bi-moon-stars"></i> <b>Days:</b> {{ booking.days }}
+              </p>
+              <p class="text-muted mb-1">
+                <i class="bi bi-cash-stack"></i> <b>Base Price:</b> €{{ booking.price_before_discount }}
+              </p>
+
+              {% if booking.discount_percent > 0 %}
+                <p class="text-success fw-semibold mb-1">
+                  🎁 Discount: {{ booking.discount_percent }}% ({{ booking.discount_reason }})
+                </p>
+              {% endif %}
+
+              <p class="fw-bold text-primary mb-2">
+                💰 Final Price: €{{ booking.final_price }}
+              </p>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center mt-5">
+      <p class="text-muted">You don’t have any bookings yet.</p>
+      <a href="{% url 'room_list' %}" class="btn btn-primary">
+        <i class="bi bi-door-open"></i> Book a Room
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.card {
+  transition: all 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+</style>
+
+{% endblock %}

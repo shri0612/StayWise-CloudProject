@@ -27,6 +27,7 @@ from accounts.views import login_required_dynamo, manager_required
 from staywiselib.pricing import calculate_final_price 
 from decimal import Decimal
 from email.mime.multipart import MIMEMultipart
+from boto3.dynamodb.conditions import Attr
 
 
 # ======================================================
@@ -106,6 +107,8 @@ def book_room(request, room_id):
                 'payment_method': payment_method,
                 'payment_status': 'Unpaid',
                 'booked_on': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'booked_by_email': request.session['user']['email'],
+                
             }
 
             # ✅ Store booking in DynamoDB
@@ -411,3 +414,28 @@ def get_all_bookings_from_dynamo():
     table = dynamodb.Table('Bookings')
     response = table.scan()
     return response.get('Items', [])
+    
+    
+    
+@login_required_dynamo
+def my_bookings(request):
+    # 🛑 If not logged in, redirect to login
+    if 'user' not in request.session:
+        return redirect('login_user')
+
+    # ✅ Use email from session (not Django user)
+    user_email = request.session['user']['email']
+
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    table = dynamodb.Table('Bookings')
+
+    # 🧩 Fetch bookings belonging to this user
+    response = table.scan()
+    all_bookings = response.get('Items', [])
+
+    # Filter only the logged-in user's bookings
+    user_bookings = [b for b in all_bookings if b.get('booked_by_email') == user_email]
+
+
+    # ✅ Render with proper path
+    return render(request, 'accommodation/my_bookings.html', {'bookings': user_bookings})

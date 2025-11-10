@@ -1,6 +1,9 @@
 {% extends 'accommodation/base.html' %}
+
+
 {% load widget_tweaks %}
 {% block content %}
+{% include 'accommodation/discount_ticker.html' %}
 
 <div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
   <div class="card shadow border-0 rounded-4" style="width: 420px;">
@@ -75,5 +78,44 @@
     </div>
   </div>
 </div>
+
+<!-- ✅ Date logic script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const today = new Date().toISOString().split("T")[0];
+  const checkin = document.getElementById("id_checkin_date");
+  const checkout = document.getElementById("id_checkout_date");
+  const daysInput = document.getElementById("id_days");
+
+  // Disable past dates
+  if (checkin) checkin.setAttribute("min", today);
+  if (checkout) checkout.setAttribute("min", today);
+
+  // Update checkout min date when checkin changes
+  if (checkin) {
+    checkin.addEventListener("change", function() {
+      checkout.value = "";
+      checkout.setAttribute("min", this.value);
+    });
+  }
+
+  // Auto-calculate days when both dates are selected
+  if (checkout) {
+    checkout.addEventListener("change", function() {
+      const start = new Date(checkin.value);
+      const end = new Date(checkout.value);
+
+      if (end > start) {
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        daysInput.value = diffDays;
+      } else {
+        daysInput.value = "";
+        alert("Checkout date must be after Check-in date.");
+      }
+    });
+  }
+});
+</script>
 
 {% endblock %}

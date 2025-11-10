@@ -147,23 +147,25 @@
   <div class="card-body">
     <h5 class="fw-bold text-secondary mb-3">📘 Recent Bookings</h5>
 
-    <div class="table-responsive">
+    <!-- ✅ Scrollable table container -->
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
       <table class="table align-middle table-hover">
-        <thead class="table-light">
+        <thead class="table-light sticky-top">
           <tr>
             <th>Customer</th>
             <th>Email</th>
+            <th>Booked By</th>
             <th>Room</th>
             <th>Days</th>
             <th>People</th>
-            <th>Base (€)</th>
-            <th>Final (€)</th>
-            <th>Discount (%)</th>
-            <th>Saved (€)</th>
+            <th>Base</th>
+            <th>Final</th>
+            <th>Discount</th>
+            <th>Saved</th>
             <th>Reason</th>
-            <th>Payment</th>
-            <th>Status</th>
-            <th>Booked On</th>
+            <!-- <th>Payment</th> -->
+            <!-- <th>Status</th> -->
+            <th>Booked-On</th>
           </tr>
         </thead>
 
@@ -172,11 +174,11 @@
           <tr {% if b.discount_percent > 0 %} class="table-success" {% endif %}>
             <td>{{ b.name }}</td>
             <td>{{ b.email }}</td>
+            <td>{{ b.booked_by_email|default:"-" }}</td>
             <td>{{ b.room_name }}</td>
             <td>{{ b.days }}</td>
             <td>{{ b.people }}</td>
 
-            <!-- 💰 Base Price -->
             <td>
               {% if b.price_before_discount %}
                 €{{ b.price_before_discount|floatformat:2 }}
@@ -185,34 +187,26 @@
               {% endif %}
             </td>
 
-            <!-- ✅ Final Price -->
             <td class="fw-semibold text-success">
               €{{ b.final_price|default:"0"|floatformat:2 }}
             </td>
 
-            <!-- 🎯 Discount % -->
             <td>
               {% if b.discount_percent > 0 %}
-                <span class="text-success fw-semibold">
-                  {{ b.discount_percent|floatformat:1 }}%
-                </span>
+                <span class="text-success fw-semibold">{{ b.discount_percent|floatformat:1 }}%</span>
               {% else %}
                 <span class="text-muted">–</span>
               {% endif %}
             </td>
 
-            <!-- 💸 Amount Saved -->
             <td>
               {% if b.discount_amount > 0 %}
-                <span class="text-success fw-semibold">
-                  €{{ b.discount_amount|floatformat:2 }}
-                </span>
+                <span class="text-success fw-semibold">€{{ b.discount_amount|floatformat:2 }}</span>
               {% else %}
                 <span class="text-muted">–</span>
               {% endif %}
             </td>
 
-            <!-- 🏷️ Discount Reason -->
             <td class="text-muted small">
               {% if b.discount_reason %}
                 {{ b.discount_reason }}
@@ -221,24 +215,20 @@
               {% endif %}
             </td>
 
-            <!-- 💳 Payment Method -->
-            <td>{{ b.payment_method|default:"-" }}</td>
-
-            <!-- 🧾 Payment Status -->
-            <td>
+            <!-- <td>{{ b.payment_method|default:"-" }}</td> -->
+            <!-- <td>
               {% if b.payment_status == "Paid" %}
                 <span class="badge bg-success">Paid</span>
               {% else %}
                 <span class="badge bg-warning text-dark">Unpaid</span>
               {% endif %}
-            </td>
+            </td> -->
 
-            <!-- ⏰ Booked On -->
             <td class="text-muted small">{{ b.booked_on }}</td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="13" class="text-muted text-center py-4">No bookings found</td>
+            <td colspan="12" class="text-muted text-center py-4">No bookings found</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -247,8 +237,6 @@
   </div>
 </div>
 
-
-</div>
 
 <!-- ====================== CHART.JS ====================== -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

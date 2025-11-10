@@ -1,0 +1,40 @@
+<div class="discount-ticker-wrapper">
+  <div class="container">
+    <div class="discount-ticker text-center">
+      <marquee behavior="scroll" direction="left" scrollamount="6"
+               onmouseover="this.stop();" onmouseout="this.start();">
+        🎉 <strong>Festival Discount:</strong> <span class="highlight">10% OFF</span> during active festivals! |
+        🌙 <strong>Weekend Offer:</strong> <span class="highlight">5% OFF</span> on all weekend bookings! |
+        🏡 <strong>Long Stay Bonus:</strong> <span class="highlight">7% OFF</span> when you stay for 7+ days!
+      </marquee>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ===========================
+   ✨ Premium Clean Ticker
+   =========================== */
+.discount-ticker-wrapper {
+  background: none;
+  padding: 10px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* 👈 subtle bottom shadow */
+  display: flex;
+  justify-content: center;
+}
+
+.discount-ticker {
+  background: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #212529;
+  letter-spacing: 0.3px;
+  overflow: hidden;
+}
+
+/* 🌿 Highlight brand color */
+.discount-ticker .highlight {
+  color: #6f42c1; /* StayWise accent purple */
+  font-weight: 600;
+}
+</style>

@@ -16,6 +16,7 @@ def insert_booking_to_dynamodb(booking_data):
     item = {
         'booking_id': str(booking_data.get('booking_id')),
         'room_id': str(booking_data.get('room_id')),
+        'room_name': booking_data.get('room_name', 'Unknown Room'),  # ✅ Added line
         'name': booking_data.get('name'),
         'email': booking_data.get('email'),
         'days': int(booking_data.get('days', 1)),
@@ -28,17 +29,17 @@ def insert_booking_to_dynamodb(booking_data):
         'discount_percent': Decimal(str(booking_data.get('discount_percent', 0))),
         'discount_amount': Decimal(str(booking_data.get('discount_amount', 0))),
         'discount_reason': booking_data.get('discount_reason', '-'),
+        'booked_by_email': booking_data.get('booked_by_email'),
     }
 
     # ✅ Save booking to DynamoDB
     table.put_item(Item=item)
     print("\n✅ Booking inserted into DynamoDB:")
     print("🆔 Booking ID:", item["booking_id"])
-    print("🏠 Room:", item["room_id"])
+    print("🏠 Room:", item["room_name"])
     print("💰 Final Price: €", item["final_price"])
     print("🎁 Discount Applied:", item["discount_percent"], "% -", item["discount_reason"])
 
-   
     try:
         print("\n📦 Sending booking details to SQS...")
         send_to_sqs(item)

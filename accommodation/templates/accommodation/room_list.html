@@ -1,34 +1,66 @@
 {% extends 'accommodation/base.html' %}
+
+
 {% block content %}
+{% include 'accommodation/discount_ticker.html' %}
 
-{% if user.is_authenticated %}
-  {% with user.profile.role as role %}
-    <h2 class="text-center fw-bold mt-3 text-dark">
-      {% if role|lower == "manager" %}
-        👋 Welcome back, Manager!
-      {% else %}
-        👋 Welcome back, {{ user.username|title }}!
-      {% endif %}
-    </h2>
-  {% endwith %}
-  
-  <h2 class="text-center mb-4">
-    🏠 <b>Available Rooms</b>
-  </h2>
-{% endif %}
+<!-- ✅ Remove after testing -->
+<!--<h1 style="color:red; text-align:center;">💡 Customer Page Loaded (Final Version)</h1>-->
 
-<div class="container mt-4">
-  <div class="row justify-content-center">
+<!-- 💰 Modern Compact Filter -->
+<div class="container my-4">
+  <div class="filter-bar shadow-sm p-3 px-4 d-flex flex-wrap justify-content-between align-items-center">
+    
+    <!-- Left Side -->
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-funnel-fill text-primary fs-4"></i>
+      <h5 class="fw-semibold text-dark mb-0">Smart Filters</h5>
+      <span class="text-muted small ms-2">Refine your room search easily</span>
+    </div>
+
+    <!-- Right Side -->
+    <div class="d-flex align-items-center gap-3 mt-2 mt-md-0">
+      <!-- Price Filter -->
+      <div class="filter-dropdown d-flex align-items-center gap-2">
+        <i class="bi bi-cash-coin text-primary"></i>
+        <select id="priceFilter" class="form-select form-select-sm shadow-none border-0 fw-semibold">
+          <option value="all">All Prices</option>
+          <option value="10">Under €10</option>
+          <option value="20">Under €20</option>
+          <option value="50">Under €50</option>
+          <option value="100">Under €100</option>
+        </select>
+      </div>
+
+      <!-- 🆕 Sort Dropdown -->
+      <div class="filter-dropdown d-flex align-items-center gap-2">
+        <i class="bi bi-sort-down text-primary"></i>
+        <select id="sortFilter" class="form-select form-select-sm shadow-none border-0 fw-semibold">
+          <option value="default">Sort By</option>
+          <option value="low-high">Price: Low → High</option>
+          <option value="high-low">Price: High → Low</option>
+          <option value="capacity">Capacity</option>
+        </select>
+      </div>
+
+      <button id="resetFilter" class="btn btn-reset px-3 py-1 rounded-pill">
+        <i class="bi bi-arrow-repeat me-1"></i> Reset
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- 🏠 Room Section -->
+<div class="container mt-4 mb-5">
+  <h2 class="text-center mb-4 fw-bold text-dark">🏠 Available Rooms</h2>
+
+  <div class="row justify-content-center" id="roomContainer">
     {% for room in rooms %}
-      <div class="col-md-4 col-sm-6 mb-4">
-        <div class="room-card card border-0 shadow-lg rounded-4 overflow-hidden">
-          
-          <!-- Image Carousel -->
-          <div id="carousel{{ room.room_id }}" 
-               class="carousel slide"
-               data-bs-ride="false" 
-               data-bs-interval="false">
-            
+      <div class="col-md-4 col-sm-6 mb-4 room-col">
+        <div class="room-card card border-0 shadow-lg rounded-4 overflow-hidden" data-price="{{ room.price }}" data-capacity="{{ room.capacity }}">
+          <!-- 🖼 Image Carousel -->
+          <div id="carousel{{ room.room_id }}" class="carousel slide" data-bs-ride="false" data-bs-interval="false">
             <div class="carousel-inner">
               {% for img_url in room.images %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
@@ -36,37 +68,29 @@
                 </div>
               {% endfor %}
             </div>
-
             {% if room.images|length > 1 %}
-              <!-- Prev Button -->
-              <button class="carousel-control-prev visible-carousel-btn" 
-                      type="button" 
-                      data-bs-target="#carousel{{ room.room_id }}" 
-                      data-bs-slide="prev">
-                <span class="carousel-nav-icon">
-                  <i class="bi bi-chevron-left"></i>
-                </span>
+              <button class="carousel-control-prev visible-carousel-btn" type="button" data-bs-target="#carousel{{ room.room_id }}" data-bs-slide="prev">
+                <span class="carousel-nav-icon"><i class="bi bi-chevron-left"></i></span>
               </button>
-
-              <!-- Next Button -->
-              <button class="carousel-control-next visible-carousel-btn" 
-                      type="button" 
-                      data-bs-target="#carousel{{ room.room_id }}" 
-                      data-bs-slide="next">
-                <span class="carousel-nav-icon">
-                  <i class="bi bi-chevron-right"></i>
-                </span>
+              <button class="carousel-control-next visible-carousel-btn" type="button" data-bs-target="#carousel{{ room.room_id }}" data-bs-slide="next">
+                <span class="carousel-nav-icon"><i class="bi bi-chevron-right"></i></span>
               </button>
             {% endif %}
           </div>
 
-          <!-- Room Info -->
+          <!-- 💸 Room Info -->
           <div class="card-body p-4">
-            <h5 class="card-title fw-semibold text-dark mb-2">{{ room.name }}</h5>
+            <h5 class="fw-semibold text-dark">{{ room.name }}</h5>
             <div class="d-flex justify-content-between align-items-center mb-2 text-muted small">
               <span><i class="bi bi-people"></i> {{ room.capacity }} guests</span>
               <span><i class="bi bi-cash-stack"></i> €{{ room.price }}/day</span>
             </div>
+
+            {% if room.discount_price %}
+              <p class="mb-2 text-success fw-bold">
+                💰 Discounted Price: €{{ room.discount_price }}
+              </p>
+            {% endif %}
 
             <p class="mb-3">
               <strong>Status:</strong>
@@ -89,83 +113,113 @@
   </div>
 </div>
 
+<!-- 🎨 Styling -->
 <style>
-/* ===========================
-   🌿 Premium Room Card Styles
-   =========================== */
-.room-card {
-  transition: box-shadow 0.3s ease;
-  height: 100%;
-  background: #ffffff;
-  border-radius: 1rem;
-}
-.room-card:hover {
-  transform: none; /* No movement */
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+body {
+  background: linear-gradient(180deg, #f8fbff 0%, #eef2f8 100%);
 }
 
-/* Room Images */
-.room-img {
-  height: 250px;
-  object-fit: cover;
-  transition: transform 0.6s ease-in-out;
+/* 🌿 Filter Bar */
+.filter-bar {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 123, 255, 0.1);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease-in-out;
 }
-
-/* Carousel Transition Smoothness */
-.carousel-item {
-  transition: transform 0.8s ease, opacity 0.8s ease;
+.filter-bar:hover {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
-
-/* Carousel Buttons (visible and elegant) */
-.visible-carousel-btn {
-  width: 48px;
-  height: 48px;
-  background: rgba(255,255,255,0.9);
-  border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.1);
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 1;
-  transition: all 0.3s ease;
-}
-.visible-carousel-btn:hover {
-  background: linear-gradient(135deg, #007bff, #6610f2);
-  color: #fff;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-/* Icon inside button */
-.carousel-nav-icon i {
-  font-size: 1.3rem;
-  color: #000;
-  position: relative;
-  top: 1px;
-}
-.visible-carousel-btn:hover .carousel-nav-icon i {
-  color: #fff;
-}
-
-/* Gradient Book Button */
-.btn-gradient {
-  background: linear-gradient(90deg, #007bff, #6f42c1);
+.filter-dropdown select {
+  background: transparent;
+  color: #333;
   border: none;
-  color: #fff;
+  font-size: 0.95rem;
+}
+.filter-dropdown select:focus {
+  box-shadow: none;
+  outline: none;
+  border-bottom: 2px solid #007bff;
+}
+.btn-reset {
+  background: linear-gradient(90deg, #007bff, #6610f2);
+  color: white;
   font-weight: 500;
+  border: none;
   transition: 0.3s;
 }
-.btn-gradient:hover {
+.btn-reset:hover {
   background: linear-gradient(90deg, #0056d2, #4b25a3);
-  color: #fff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
 }
 
-/* Subtle badge colors */
-.bg-success-subtle {
-  background-color: rgba(25,135,84,0.15);
+/* 🌿 Room Card */
+.room-card { transition: 0.3s; }
+.room-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+.room-img { height: 250px; object-fit: cover; border-bottom: 1px solid #eee; }
+
+/* Carousel Buttons */
+.visible-carousel-btn {
+  width: 42px; height: 42px; background: rgba(255,255,255,0.9);
+  border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);
+  top: 45%; transform: translateY(-50%); opacity: 1; transition: 0.3s;
 }
-.bg-danger-subtle {
-  background-color: rgba(220,53,69,0.15);
+.visible-carousel-btn:hover {
+  background: linear-gradient(135deg, #007bff, #6610f2); color: #fff;
 }
+.carousel-nav-icon i { font-size: 1.2rem; color: #000; }
+.visible-carousel-btn:hover .carousel-nav-icon i { color: #fff; }
+
+/* 🌿 Buttons & Badges */
+.btn-gradient {
+  background: linear-gradient(90deg, #007bff, #6610f2);
+  color: #fff; border: none; transition: 0.3s;
+}
+.btn-gradient:hover { background: linear-gradient(90deg, #0056d2, #4b25a3); }
+.bg-success-subtle { background-color: rgba(25,135,84,0.15); }
+.bg-danger-subtle { background-color: rgba(220,53,69,0.15); }
 </style>
+
+<!-- 💡 Filter Script -->
+<script>
+  const priceFilter = document.getElementById("priceFilter");
+  const sortFilter = document.getElementById("sortFilter");
+  const resetBtn = document.getElementById("resetFilter");
+  const container = document.getElementById("roomContainer");
+
+  // 🔹 Price filter
+  priceFilter.addEventListener("change", () => {
+    const maxPrice = priceFilter.value === "all" ? Infinity : parseInt(priceFilter.value);
+    document.querySelectorAll(".room-col").forEach(col => {
+      const price = parseInt(col.querySelector(".room-card").dataset.price);
+      col.style.display = price <= maxPrice ? "" : "none";
+    });
+  });
+
+  // 🔹 Sort filter
+  sortFilter.addEventListener("change", () => {
+    const cards = Array.from(container.children);
+    let sorted = [];
+
+    if (sortFilter.value === "low-high") {
+      sorted = cards.sort((a, b) => a.querySelector(".room-card").dataset.price - b.querySelector(".room-card").dataset.price);
+    } else if (sortFilter.value === "high-low") {
+      sorted = cards.sort((a, b) => b.querySelector(".room-card").dataset.price - a.querySelector(".room-card").dataset.price);
+    } else if (sortFilter.value === "capacity") {
+      sorted = cards.sort((a, b) => a.querySelector(".room-card").dataset.capacity - b.querySelector(".room-card").dataset.capacity);
+    } else return;
+
+    container.innerHTML = "";
+    sorted.forEach(card => container.appendChild(card));
+  });
+
+  // 🔹 Reset all
+  resetBtn.addEventListener("click", () => {
+    priceFilter.value = "all";
+    sortFilter.value = "default";
+    document.querySelectorAll(".room-col").forEach(col => col.style.display = "");
+  });
+</script>
 
 {% endblock %}
