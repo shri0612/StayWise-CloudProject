@@ -14,7 +14,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&jji!=w9t7#ew82drb@2#r)0z(f(b)w&&j%^1(ir8oh_w5!1l+'
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'staywise-env.eba-nznpmhhm.us-east-1.elasticbeanstalk.com',
+    '127.0.0.1',
+    'localhost'
+]
 CSRF_TRUSTED_ORIGINS = [
     'https://9427716c9da34b16b4494ea76dd318b0.vfs.cloud9.us-east-1.amazonaws.com',
 ]
