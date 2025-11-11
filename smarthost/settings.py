@@ -21,6 +21,7 @@ ALLOWED_HOSTS = [
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://9427716c9da34b16b4494ea76dd318b0.vfs.cloud9.us-east-1.amazonaws.com',
+    'https://staywise-env.eba-nznpmhhm.us-east-1.elasticbeanstalk.com',
 ]
 
 
