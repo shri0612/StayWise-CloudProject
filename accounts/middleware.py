@@ -20,8 +20,8 @@ class DynamicSessionMiddleware:
 
         response = self.get_response(request)
 
-        # Just for debug clarity
+        
         if request.session.session_key:
-            print(f"🧩 Active Session Middleware → Cookie: {request.session_cookie_name} | Key: {request.session.session_key}")
+            print(f" Active Session Middleware → Cookie: {request.session_cookie_name} | Key: {request.session.session_key}")
 
         return response

@@ -112,10 +112,10 @@ def book_room(request, room_id):
             # Store booking in DynamoDB
             insert_booking_to_dynamodb(booking_data)
 
-            # ✅ Email confirmation
+            # Email confirmation
             send_user_email(booking_data)
 
-            # ✅ Update room capacity
+            # Update room capacity
             new_capacity = int(room['capacity']) - people
             update_room_in_dynamo(room_id, room['name'], max(new_capacity, 0), room['price'])
 
@@ -130,9 +130,7 @@ def book_room(request, room_id):
     return render(request, 'accommodation/book_room.html', {'room': room, 'form': form})
 
 
-# ======================================================
-# 📊 Manager Dashboard
-# ======================================================
+
 # @never_cache
 # @login_required_dynamo
 # @manager_required
@@ -198,7 +196,7 @@ def manager_dashboard(request):
         else:
             b['room_name'] = f"Room ({str(room_id)[:6]})"
 
-        # 🔹 Convert Decimal fields to float for safe template math
+        #  Convert Decimal fields to float for safe template math
         try:
             if 'price_before_discount' in b:
                 b['price_before_discount'] = float(b['price_before_discount'])
@@ -396,9 +394,9 @@ We look forward to hosting you soon.
             server.starttls()
             server.login(sender, password)
             server.send_message(msg)
-        print(f"✅ Booking confirmation email sent successfully to: {recipient}")
-        print(f"📧 Subject: {subject}")
-        print(f"💬 Preview:\n{body}")
+        print(f"Booking confirmation email sent successfully to: {recipient}")
+        print(f" Subject: {subject}")
+        print(f" Preview:\n{body}")
 
     except smtplib.SMTPAuthenticationError:
         print("authentication failed — check your Gmail App Password setup.")

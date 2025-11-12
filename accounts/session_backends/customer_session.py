@@ -5,5 +5,5 @@ class SessionStore(DBStore):
     @classmethod
     def get_model_class(cls):
         from django.contrib.sessions.models import Session
-        Session._meta.db_table = "customer_sessions"  # 👈 separate table
+        Session._meta.db_table = "customer_sessions"  #  separate table
         return Session

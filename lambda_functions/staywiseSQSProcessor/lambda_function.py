@@ -1,15 +1,15 @@
 import json
 import boto3
-
+#using lambda function to automatically trigger sns to notify the manager
 sns = boto3.client('sns')
 
 def lambda_handler(event, context):
-    print("📥 Received SQS Event:", json.dumps(event))
+    # print(" Received SQS Event:", json.dumps(event))
 
     for record in event['Records']:
         try:
             message = json.loads(record['body'])
-            print("✅ Booking Message Parsed:", message)
+            # print("Booking Message Parsed:", message)
 
             # Extract booking details
             name = message.get("name", "Customer")
@@ -21,7 +21,7 @@ def lambda_handler(event, context):
             reason = message.get("discount_reason", "-")
             booked_on = message.get("booked_on", "N/A")
 
-            # 📢 Manager Notification Message
+            #  Manager Notification Message
             subject = f"📢 New Booking Alert - {room}"
             body = f"""
 📢 NEW BOOKING ALERT
@@ -37,7 +37,7 @@ A customer named {name} ({email}) has made a booking through StayWise.
 Please check your StayWise Manager Dashboard for more details.
 """
 
-            topic_arn = "arn:aws:sns:us-east-1:746813293947:staywise-bookings"  # ✅ Replace with your SNS ARN
+            topic_arn = "arn:aws:sns:us-east-1:746813293947:staywise-bookings"  
 
             response = sns.publish(
                 TopicArn=topic_arn,
@@ -45,10 +45,10 @@ Please check your StayWise Manager Dashboard for more details.
                 Message=body
             )
 
-            print("✅ SNS Notification sent successfully!")
-            print("📨 Message ID:", response['MessageId'])
+            # print("SNS Notification sent successfully!")
+            # print(" Message ID:", response['MessageId'])
 
         except Exception as e:
-            print("❌ Error processing booking record:", e)
+            print("Error processing booking record:", e)
 
     return {"statusCode": 200, "body": "Processed SQS booking messages successfully."}

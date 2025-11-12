@@ -5,10 +5,10 @@ from functools import wraps
 from accommodation.models import Profile
 from accommodation.forms import RegisterForm, LoginForm
 from accommodation.dynamo_users import add_user_to_dynamo, verify_user_credentials
+from django.contrib.sessions.models import Session
 
-# ======================================================
-# ✅ Custom Login Decorator (for DynamoDB sessions)
-# ======================================================
+
+# Custom Login Decorator (for DynamoDB sessions)
 def login_required_dynamo(view_func):
     """Ensure user is logged in using DynamoDB session data."""
     @wraps(view_func)
@@ -19,9 +19,8 @@ def login_required_dynamo(view_func):
     return wrapper
 
 
-# ======================================================
-# ✅ Manager-only Decorator (for DynamoDB sessions)
-# ======================================================
+# Manager-only Decorator (for DynamoDB sessions)
+
 def manager_required(view_func):
     """Allow only managers (from DynamoDB) to access the view."""
     @wraps(view_func)
@@ -36,7 +35,7 @@ def manager_required(view_func):
 
 
 
-# ======================================================
+# New user registration
 def register_user(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -44,11 +43,11 @@ def register_user(request):
             user = form.save()
             role = form.cleaned_data.get('role')
 
-            # Create Profile in SQLite
+            
             profile = Profile.objects.create(user=user, role=role)
             profile.save()
 
-            # Add user to DynamoDB
+            # Add user details to DynamoDB
             add_user_to_dynamo(user, role)
 
             messages.success(request, "Registration successful! Please log in.")
@@ -58,18 +57,16 @@ def register_user(request):
 
     return render(request, 'accounts/register.html', {'form': form})
 
+ 
+# Login (DynamoDB-based)
 
-# ======================================================
-# 🔓 Login (DynamoDB-based)
-# ======================================================
-from django.contrib.sessions.models import Session
 
 def login_user(request):
     """
     Handles login for both Manager and Customer using DynamoDB credentials.
     Creates separate cookies and prevents session overwrite.
     """
-    # ✅ Clear any previous sessions
+    # Clear any previous sessions
     logout(request)
     request.session.flush()
 
@@ -82,7 +79,7 @@ def login_user(request):
         if user_data:
             role = user_data.get('role', '').lower()
 
-            # ✅ Create a fresh session
+            # Create a fresh session
             request.session.flush()
             request.session['user'] = {
                 'username': user_data['username'],
@@ -93,10 +90,10 @@ def login_user(request):
             request.session.set_expiry(3600)  # 1 hour session timeout
             request.session.save()
 
-            # ✅ Force new session key (ensures no overlap)
+            # Force new session key (ensures no overlap)
             request.session.cycle_key()
 
-            # ✅ Prepare redirect based on role
+            # Prepare redirect based on role
             if role == 'manager':
                 response = redirect('manager_dashboard')
                 response.set_cookie(
@@ -121,12 +118,7 @@ def login_user(request):
                 response.delete_cookie('sessionid_manager')
                 response.delete_cookie('smarthost_session')
 
-            # ✅ Debug: print active session info
-            print("🔹========================================")
-            print(f"🔹 Logged in as: {user_data['username']} ({role})")
-            print(f"🔹 Session Key: {request.session.session_key}")
-            print(f"🔹 Cookie Assigned: sessionid_{role}")
-            print("🔹========================================\n")
+            
 
             return response
 
@@ -136,18 +128,17 @@ def login_user(request):
     return render(request, 'accounts/login.html')
 
 
-# ======================================================
-# 🚪 Logout (Session-based)
-# ======================================================
+#  Logout 
+
 def logout_user(request):
     response = redirect('login_user')
-    # ✅ Delete all possible session cookies
+    # delete all possible session cookies
     response.delete_cookie('sessionid_manager')
     response.delete_cookie('sessionid_customer')
     response.delete_cookie('smarthost_session')
     request.session.flush()
     messages.success(request, "You have been logged out successfully.")
 
-    # ✅ Debug: confirm logout
-    print("🚪 User logged out — all session cookies cleared.\n")
+    # Debug: confirm logout
+    # print(" User logged out — all session cookies cleared.\n")
     return response
