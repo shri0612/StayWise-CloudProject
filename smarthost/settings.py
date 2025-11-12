@@ -6,9 +6,8 @@ from pathlib import Path
 import os
 from datetime import timedelta
 
-# ====================================
-# BASE SETTINGS
-# ====================================
+
+# Base settings
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-&jji!=w9t7#ew82drb@2#r)0z(f(b)w&&j%^1(ir8oh_w5!1l+'
@@ -24,10 +23,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://staywise-env.eba-nznpmhhm.us-east-1.elasticbeanstalk.com',
 ]
 
-
-# ====================================
-# APPLICATIONS
-# ====================================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,9 +44,9 @@ REST_FRAMEWORK = {
 }
 
 
-# ====================================
-# MIDDLEWARE
-# ====================================
+
+# Middleware
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -63,9 +58,6 @@ MIDDLEWARE = [
 ]
 
 
-# ====================================
-# URLS & WSGI
-# ====================================
 ROOT_URLCONF = 'smarthost.urls'
 
 TEMPLATES = [
@@ -87,9 +79,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'smarthost.wsgi.application'
 
 
-# ====================================
-# DATABASE
-# ====================================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -98,9 +87,6 @@ DATABASES = {
 }
 
 
-# ====================================
-# PASSWORD VALIDATION
-# ====================================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -109,18 +95,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# ====================================
-# INTERNATIONALIZATION
-# ====================================
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
 
-# ====================================
-# STATIC & MEDIA
-# ====================================
 STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -128,9 +108,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# ====================================
-# AUTH SETTINGS
-# ====================================
+# Authentication settings
+
 LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -139,17 +118,14 @@ SESSION_COOKIE_AGE = 1800  # 30 minutes
 SESSION_SAVE_EVERY_REQUEST = True
 
 
-# ====================================
-# SESSION SETTINGS (Fixed)
-# ====================================
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use default DB backend
 SESSION_COOKIE_NAME = 'smarthost_session'  # Base session cookie
 CSRF_COOKIE_NAME = "smarthost_csrftoken"
 
 
-# ====================================
-# AWS S3 STORAGE CONFIG
-# ====================================
+# AWS S3 storage config
+
 AWS_ACCESS_KEY_ID = "ASIA23YMKQV5SCHPM5UE"
 AWS_SECRET_ACCESS_KEY = "8j+k0eK83uzvCa2qYuoTvxfEabUI1awDuPsCYi6k"
 AWS_STORAGE_BUCKET_NAME = "studentaccommodation-media-shridharan"
@@ -162,9 +138,8 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
 
 
-# ====================================
-# JWT AUTH (for REST APIs)
-# ====================================
+
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -172,7 +147,7 @@ SIMPLE_JWT = {
 }
 
 
-# 📧 Email (Gmail SMTP)
+#  Email (Gmail SMTP)
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
