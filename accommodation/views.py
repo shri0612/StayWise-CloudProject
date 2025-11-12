@@ -28,37 +28,35 @@ from staywiselib.pricing import calculate_final_price
 from decimal import Decimal
 from email.mime.multipart import MIMEMultipart
 from boto3.dynamodb.conditions import Attr
+from decimal import Decimal
+import uuid
+from datetime import datetime
 
 
-# ======================================================
-# 🏠 Room Listing (DynamoDB)
-# ======================================================
+
+# Listing Rooms from DynamoDB
 @never_cache
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required_dynamo
 def room_list(request):
-    print("🔹 Active Session Cookie:", settings.SESSION_COOKIE_NAME)
+    
 
     rooms = get_all_rooms()
     return render(request, 'accommodation/room_list.html', {'rooms': rooms})
 
 
-# ======================================================
-# 🏡 Room Booking (DynamoDB)
-# ======================================================
-from decimal import Decimal
-import uuid
-from datetime import datetime
+
+# Customer room booking logics
 
 @login_required_dynamo
 def book_room(request, room_id):
-    # ✅ Fetch room details from DynamoDB
+    # fetching room details from DynamoDB
     room = get_room_from_dynamo(room_id)
     if not room:
         messages.error(request, "Room not found.")
         return redirect('room_list')
 
-    # ✅ Room availability check
+    # Room availability check
     if not room.get('available', True):
         return render(request, 'accommodation/room_full.html', {'room': room})
 
@@ -70,25 +68,25 @@ def book_room(request, room_id):
             checkin_date = form.cleaned_data.get('checkin_date')
             checkout_date = form.cleaned_data.get('checkout_date')
 
-            # ✅ Validate capacity
+            # validating the capacity of the room
             if people > int(room['capacity']):
                 form.add_error('people', f"Only {room['capacity']} people allowed for this room.")
                 return render(request, 'accommodation/book_room.html', {'room': room, 'form': form})
 
-            # ✅ Base price
+            # Base price
             base_price = Decimal(str(room['price'])) * Decimal(days) * Decimal(people)
 
-            # ✅ Use enhanced pricing library (Festival + Weekend + Long-Stay)
+            # using custom python library to calculate discounts (Festival + Weekend + Long-Stay)
             price_info = calculate_final_price(base_price, event="Diwali", days=days)
             final_price = Decimal(str(price_info["final_price"]))
             discount_percent = Decimal(str(price_info["total_discount_percent"]))
             discount_amount = Decimal(str(price_info["total_discount_amount"]))
             discount_reason = price_info.get("discount_reason")
 
-            # ✅ Collect payment method
+            # Collect payment method
             payment_method = request.POST.get('payment_method', 'Cash on Arrival')
 
-            # ✅ Booking record
+            # Booking record
             booking_data = {
                 'booking_id': str(uuid.uuid4()),
                 'room_id': room_id,
@@ -111,7 +109,7 @@ def book_room(request, room_id):
                 
             }
 
-            # ✅ Store booking in DynamoDB
+            # Store booking in DynamoDB
             insert_booking_to_dynamodb(booking_data)
 
             # ✅ Email confirmation
@@ -160,18 +158,18 @@ def parse_date(date_str):
 @login_required_dynamo
 @manager_required
 def manager_dashboard(request):
-    print("🔹 Active Session Cookie:", settings.SESSION_COOKIE_NAME)
+    # print(" Active Session Cookie:", settings.SESSION_COOKIE_NAME)
 
     # Fetch data from DynamoDB
     rooms = get_all_rooms() or []
     bookings = get_all_bookings_from_dynamo() or []
 
-    # 🧩 Safely count full rooms (capacity == 0)
+    #  Safely count full rooms (capacity == 0)
     total_rooms = len(rooms)
     fully_booked_rooms = sum(1 for r in rooms if r and int(r.get('capacity', 0)) == 0)
     total_bookings = len(bookings)
 
-    # 🧠 Sort bookings by date (most recent first)
+    #  Sort bookings by date (most recent first)
     from datetime import datetime
     def parse_date(b):
         d = b.get('booked_on')
@@ -182,7 +180,7 @@ def manager_dashboard(request):
 
     bookings_sorted = sorted(bookings, key=parse_date, reverse=True)
 
-    # ✅ Room name mapping (safe against missing values)
+    # Room name mapping (safe against missing values)
     room_map = {}
     for r in rooms:
         if not r:
@@ -192,7 +190,7 @@ def manager_dashboard(request):
         if rid:
             room_map[rid] = name
 
-    # ✅ Attach readable room names to bookings
+    # Attach readable room names to bookings
     for b in bookings_sorted:
         room_id = b.get('room_id')
         if room_id in room_map:
@@ -213,7 +211,7 @@ def manager_dashboard(request):
         except Exception:
             b['final_price'] = 0.0
 
-    # ✅ Summary stats for UI
+    # Summary stats for UI
     summary = {
         'total_rooms': total_rooms,
         'fully_booked_rooms': fully_booked_rooms,
@@ -228,9 +226,9 @@ def manager_dashboard(request):
 
 
 
-# ======================================================
-# ➕ Add Room (DynamoDB + S3)
-# ======================================================
+
+# Adding room from manager portal
+# images are stored in S3 and the reference link of the s3 image is stored in dynamoDB
 @never_cache
 @login_required_dynamo
 @manager_required
@@ -262,9 +260,8 @@ def add_room(request):
     return render(request, 'accommodation/add_room.html')
 
 
-# ======================================================
-# ✏️ Edit Room (DynamoDB + S3)
-# ======================================================
+
+#Edit Room and update the details to dynamo DB
 @never_cache
 @login_required_dynamo
 @manager_required
@@ -304,9 +301,9 @@ def edit_room(request, room_id):
     return render(request, 'accommodation/edit_room.html', {'room': room})
 
 
-# ======================================================
-# ❌ Delete Room
-# ======================================================
+
+# Delete Room
+
 @never_cache
 @login_required_dynamo
 @manager_required
@@ -320,9 +317,8 @@ def delete_room(request, room_id):
     return redirect('manager_dashboard')
 
 
-# ======================================================
-# 🖼️ Delete Room Image (S3 + DynamoDB)
-# ======================================================
+
+# Delete Room Image
 @login_required_dynamo
 @manager_required
 def delete_room_image(request, image_id):
@@ -341,21 +337,21 @@ def delete_room_image(request, image_id):
     return redirect('manager_dashboard')
 
 
-# ======================================================
-# ✉️ Email Notification (SMTP)
-# ======================================================
+
+# Sending Email Notification to the customers who books the room (Gmail SMTP)
+
 def send_user_email(booking_data):
     """Send booking confirmation email to the customer via Gmail SMTP."""
 
-    sender = "shri2178499@gmail.com"           # ✅ Your Gmail address
-    password = "reynldypshnzrxfr"              # ✅ App password
+    sender = "shri2178499@gmail.com"           
+    password = "reynldypshnzrxfr"              
     recipient = booking_data.get("email")
 
     if not recipient:
-        print("❌ No recipient email found in booking_data")
+        print("no recipient email found in booking_data")
         return
 
-    # ✅ Extract booking info safely
+    # extract booking info safely
     name = booking_data.get("name", "Customer")
     room_name = booking_data.get("room_name", "Room")
     base_price = booking_data.get("price_before_discount", 0)
@@ -366,10 +362,10 @@ def send_user_email(booking_data):
     payment_status = booking_data.get("payment_status", "Unpaid")
     booked_on = booking_data.get("booked_on", "-")
 
-    # ✅ Dynamic subject
+    
     subject = f"🎉 StayWise Booking Confirmed - {room_name}"
 
-    # ✅ Customer-friendly body
+    
     body = f"""
 Hello {name},
 
@@ -387,7 +383,7 @@ Thank you for booking with StayWise! 🏡
 We look forward to hosting you soon.
 """
 
-    # ✅ Create MIME message
+    
     msg = MIMEMultipart()
     msg["From"] = sender
     msg["To"] = recipient
@@ -405,9 +401,10 @@ We look forward to hosting you soon.
         print(f"💬 Preview:\n{body}")
 
     except smtplib.SMTPAuthenticationError:
-        print("❌ Authentication failed — check your Gmail App Password setup.")
+        print("authentication failed — check your Gmail App Password setup.")
     except Exception as e:
-        print("❌ Error sending user email:", e)
+        print("error sending user email:", e)
+
 def get_all_bookings_from_dynamo():
     """Fetch all booking records from DynamoDB."""
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -419,17 +416,17 @@ def get_all_bookings_from_dynamo():
     
 @login_required_dynamo
 def my_bookings(request):
-    # 🛑 If not logged in, redirect to login
+    #  If not logged in, redirect to login
     if 'user' not in request.session:
         return redirect('login_user')
 
-    # ✅ Use email from session (not Django user)
+    # Use email from session (not Django user)
     user_email = request.session['user']['email']
 
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('Bookings')
 
-    # 🧩 Fetch bookings belonging to this user
+    #  Fetch bookings belonging to this user
     response = table.scan()
     all_bookings = response.get('Items', [])
 
@@ -437,5 +434,5 @@ def my_bookings(request):
     user_bookings = [b for b in all_bookings if b.get('booked_by_email') == user_email]
 
 
-    # ✅ Render with proper path
+    #  Render with proper path
     return render(request, 'accommodation/my_bookings.html', {'bookings': user_bookings})

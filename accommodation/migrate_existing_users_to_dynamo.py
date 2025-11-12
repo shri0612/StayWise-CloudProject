@@ -22,7 +22,7 @@ def migrate_users():
         role = profile.role
         print(f"➡️ Migrating {user.username} ({role}) to DynamoDB...")
         add_user_to_dynamo(user, role)
-    print("✅ All users migrated successfully!")
+    print("all users migrated successfully!")
 
 if __name__ == '__main__':
     migrate_users()

@@ -20,7 +20,7 @@ class BookingForm(forms.ModelForm):
         fields = ['name', 'email', 'days', 'people', 'checkin_date', 'checkout_date']
         
         
-# ✅ Registration Form
+# Registration Form
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
@@ -64,7 +64,7 @@ class RegisterForm(forms.ModelForm):
 #         return cleaned_data
 
 
-# ✅ Login Form
+# login Form
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))

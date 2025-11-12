@@ -3,16 +3,15 @@ import json
 from decimal import Decimal
 
 
-# ======================================================
-# ✅ INSERT BOOKING INTO DYNAMODB + SNS + SQS
-# ======================================================
+# Inserting the booking data to the DynamoDB table named Bookings
 def insert_booking_to_dynamodb(booking_data):
     """Insert booking into DynamoDB, trigger SNS, and send to SQS."""
     
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
     table = dynamodb.Table('Bookings')
 
-    # 🧩 Prepare the item for DynamoDB
+    # Creating proper fields to store booking data in the DynamoDB table name "Bookings"
+    # All the booking details will stored in the dynamoDB table named Bookings
     item = {
         'booking_id': str(booking_data.get('booking_id')),
         'room_id': str(booking_data.get('room_id')),
@@ -32,28 +31,20 @@ def insert_booking_to_dynamodb(booking_data):
         'booked_by_email': booking_data.get('booked_by_email'),
     }
 
-    # ✅ Save booking to DynamoDB
+    # The below code helps to insert the booking details in to the DynamoDB table
     table.put_item(Item=item)
-    print("\n✅ Booking inserted into DynamoDB:")
-    print("🆔 Booking ID:", item["booking_id"])
-    print("🏠 Room:", item["room_name"])
-    print("💰 Final Price: €", item["final_price"])
-    print("🎁 Discount Applied:", item["discount_percent"], "% -", item["discount_reason"])
 
     try:
-        print("\n📦 Sending booking details to SQS...")
         send_to_sqs(item)
     except Exception as e:
-        print("⚠️ Could not send booking to SQS:", e)
+        print("could not send booking to SQS:", e)
 
     return True
 
 
-# ======================================================
-# 📦 SEND BOOKING MESSAGE TO SQS
-# ======================================================
+# Sending the booking message to the SQS to queue the booking details
 def send_to_sqs(booking_data):
-    """Send booking data to SQS queue for async processing."""
+    """Sending booking data to SQS queue for asyncronous processing."""
     sqs = boto3.client('sqs', region_name='us-east-1')
 
     queue_url = "https://sqs.us-east-1.amazonaws.com/746813293947/StayWiseBookingQueue"  
@@ -65,11 +56,11 @@ def send_to_sqs(booking_data):
             MessageBody=message_body
         )
 
-        print("✅ Booking message sent to SQS successfully!")
-        print("📦 Queue URL:", queue_url)
-        print("📨 Message ID:", response.get("MessageId"))
+        # print("booking message sent to SQS successfully!")
+        # print("queue URL:", queue_url)
+        # print("Message ID:", response.get("MessageId"))
         return True
 
     except Exception as e:
-        print("❌ Error sending message to SQS:", e)
+        print("error sending message to SQS:", e)
         return False

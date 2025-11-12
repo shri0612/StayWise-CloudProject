@@ -48,12 +48,12 @@
 <!-- ====================== PAGE CONTENT ====================== -->
 <div class="container-fluid">
 
-  <!-- 🔹 Page Title -->
+  <!--  Page Title -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold text-gradient">📊 Manager Dashboard</h2>
   </div>
 
-  <!-- 🔹 Analytics Chart Section -->
+  <!--  Analytics Chart Section -->
  <div class="card chart-card mb-4">
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
     <h5 class="fw-bold text-secondary mb-2">📈 Room & Booking Overview</h5>
@@ -70,7 +70,7 @@
 </div>
 
 
-  <!-- 🔹 Summary Cards -->
+  <!--  Summary Cards -->
   <div class="row g-4 mb-4">
     <div class="col-md-4">
       <div class="card shadow-sm border-0 text-center p-3">
@@ -94,7 +94,7 @@
     </div>
   </div>
 
-  <!-- 🔹 Rooms Section -->
+  <!--  Rooms Section -->
   <div id="rooms" class="card shadow-sm border-0 mb-4">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-3">
@@ -141,13 +141,13 @@
       </div>
     </div>
   </div>
-<!-- 🔹 Bookings Section -->
-<!-- 🔹 Bookings Section -->
+<!--  Bookings Section -->
+<!--  Bookings Section -->
 <div id="bookings" class="card shadow-sm border-0">
   <div class="card-body">
     <h5 class="fw-bold text-secondary mb-3">📘 Recent Bookings</h5>
 
-    <!-- ✅ Scrollable table container -->
+    <!-- scrollable table container -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
       <table class="table align-middle table-hover">
         <thead class="table-light sticky-top">
@@ -339,13 +339,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Initial render
+  // Initial render
   renderChart("bar");
 
-  // ✅ Dropdown switcher
+  // Dropdown switcher
   window.changeChartType = renderChart;
 
-  // ✅ Re-render on resize (to rebuild gradients)
+  // Re-render on resize (to rebuild gradients)
   window.addEventListener("resize", () => {
     renderChart(chartInstance.config.type);
   });

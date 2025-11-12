@@ -99,7 +99,7 @@
 
 <body>
   
-  <!-- 🔹 Navbar -->
+  <!--  Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">StayWise</a>
@@ -113,7 +113,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
         {% if request.session.user %}
           <ul class="navbar-nav me-4">
-            <!-- 🆕 My Bookings link only for customers -->
+            <!--  My Bookings link only for customers -->
             {% if request.session.user.role == "customer" %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'my_bookings' %}">
@@ -139,13 +139,13 @@
     </div>
   </nav>
 
-  <!-- 🔹 Page Content -->
+  <!--  Page Content -->
   <main>
     {% block content %}
     {% endblock %}
   </main>
 
-  <!-- 🔹 Footer -->
+  <!--  Footer -->
   <footer>
     © 2025 <span>StayWise</span> | Designed for Student Accommodation Management
   </footer>

@@ -1,5 +1,8 @@
 import boto3
 
+'''---Below function ensures that if the Users,Bookings, Rooms tables are already present in the dynamoDB if it is not 
+there it will create the respective tables inside DynamoDB---'''
+
 def ensure_table_exists(table_name, key_name, key_type='S'):
     """Create DynamoDB table if it doesn't exist."""
     dynamodb = boto3.client('dynamodb', region_name='us-east-1')
@@ -17,14 +20,14 @@ def ensure_table_exists(table_name, key_name, key_type='S'):
             AttributeDefinitions=[{'AttributeName': key_name, 'AttributeType': key_type}],
             BillingMode='PAY_PER_REQUEST'
         )
-        print(f"✅ Table '{table_name}' created successfully!\n")
+        # print(f"Table '{table_name}' created successfully!\n")
 
     except Exception as e:
-        print(f"⚠️ Could not create/check table '{table_name}':", e)
+        print(f"could not create/check table '{table_name}':", e)
 
 
 def ensure_all_tables():
-    """Ensure all required DynamoDB tables exist for accommodation app."""
+    """Ensure all required DynamoDB tables exist for staywise app."""
     ensure_table_exists('Users', 'user_id')
     ensure_table_exists('Bookings', 'booking_id')
     ensure_table_exists('Rooms', 'room_id')

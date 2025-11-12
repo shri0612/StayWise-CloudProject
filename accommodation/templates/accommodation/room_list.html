@@ -4,10 +4,10 @@
 {% block content %}
 {% include 'accommodation/discount_ticker.html' %}
 
-<!-- ✅ Remove after testing -->
-<!--<h1 style="color:red; text-align:center;">💡 Customer Page Loaded (Final Version)</h1>-->
+<!-- Remove after testing -->
+<!--<h1 style="color:red; text-align:center;"> Customer Page Loaded (Final Version)</h1>-->
 
-<!-- 💰 Modern Compact Filter -->
+<!--  Modern Compact Filter -->
 <div class="container my-4">
   <div class="filter-bar shadow-sm p-3 px-4 d-flex flex-wrap justify-content-between align-items-center">
     
@@ -32,7 +32,7 @@
         </select>
       </div>
 
-      <!-- 🆕 Sort Dropdown -->
+      <!--  Sort Dropdown -->
       <div class="filter-dropdown d-flex align-items-center gap-2">
         <i class="bi bi-sort-down text-primary"></i>
         <select id="sortFilter" class="form-select form-select-sm shadow-none border-0 fw-semibold">
@@ -51,15 +51,15 @@
   </div>
 </div>
 
-<!-- 🏠 Room Section -->
+<!--  Room Section -->
 <div class="container mt-4 mb-5">
-  <h2 class="text-center mb-4 fw-bold text-dark">🏠 Available Rooms</h2>
+  <h2 class="text-center mb-4 fw-bold text-dark"> Rooms</h2>
 
   <div class="row justify-content-center" id="roomContainer">
     {% for room in rooms %}
       <div class="col-md-4 col-sm-6 mb-4 room-col">
         <div class="room-card card border-0 shadow-lg rounded-4 overflow-hidden" data-price="{{ room.price }}" data-capacity="{{ room.capacity }}">
-          <!-- 🖼 Image Carousel -->
+          <!--  Image Carousel -->
           <div id="carousel{{ room.room_id }}" class="carousel slide" data-bs-ride="false" data-bs-interval="false">
             <div class="carousel-inner">
               {% for img_url in room.images %}
@@ -78,7 +78,7 @@
             {% endif %}
           </div>
 
-          <!-- 💸 Room Info -->
+          <!--  Room Info -->
           <div class="card-body p-4">
             <h5 class="fw-semibold text-dark">{{ room.name }}</h5>
             <div class="d-flex justify-content-between align-items-center mb-2 text-muted small">
@@ -113,13 +113,13 @@
   </div>
 </div>
 
-<!-- 🎨 Styling -->
+<!--  Styling -->
 <style>
 body {
   background: linear-gradient(180deg, #f8fbff 0%, #eef2f8 100%);
 }
 
-/* 🌿 Filter Bar */
+/*  Filter Bar */
 .filter-bar {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
@@ -154,7 +154,7 @@ body {
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
 }
 
-/* 🌿 Room Card */
+/*  Room Card */
 .room-card { transition: 0.3s; }
 .room-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
 .room-img { height: 250px; object-fit: cover; border-bottom: 1px solid #eee; }
@@ -171,7 +171,7 @@ body {
 .carousel-nav-icon i { font-size: 1.2rem; color: #000; }
 .visible-carousel-btn:hover .carousel-nav-icon i { color: #fff; }
 
-/* 🌿 Buttons & Badges */
+/*  Buttons & Badges */
 .btn-gradient {
   background: linear-gradient(90deg, #007bff, #6610f2);
   color: #fff; border: none; transition: 0.3s;
@@ -181,14 +181,14 @@ body {
 .bg-danger-subtle { background-color: rgba(220,53,69,0.15); }
 </style>
 
-<!-- 💡 Filter Script -->
+<!--  Filter Script -->
 <script>
   const priceFilter = document.getElementById("priceFilter");
   const sortFilter = document.getElementById("sortFilter");
   const resetBtn = document.getElementById("resetFilter");
   const container = document.getElementById("roomContainer");
 
-  // 🔹 Price filter
+  //  Price filter
   priceFilter.addEventListener("change", () => {
     const maxPrice = priceFilter.value === "all" ? Infinity : parseInt(priceFilter.value);
     document.querySelectorAll(".room-col").forEach(col => {
@@ -197,7 +197,7 @@ body {
     });
   });
 
-  // 🔹 Sort filter
+  //  Sort filter
   sortFilter.addEventListener("change", () => {
     const cards = Array.from(container.children);
     let sorted = [];
@@ -214,7 +214,7 @@ body {
     sorted.forEach(card => container.appendChild(card));
   });
 
-  // 🔹 Reset all
+  //  Reset all
   resetBtn.addEventListener("click", () => {
     priceFilter.value = "all";
     sortFilter.value = "default";

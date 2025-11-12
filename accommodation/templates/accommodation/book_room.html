@@ -9,7 +9,7 @@
   <div class="card shadow border-0 rounded-4" style="width: 420px;">
     <div class="card-body p-4">
       <h3 class="text-center mb-4 fw-semibold">
-        🏡 Book: <span class="text-primary">{{ room.name }}</span>
+         Book: <span class="text-primary">{{ room.name }}</span>
       </h3>
 
       <form method="post" novalidate>
@@ -31,13 +31,13 @@
           {{ form.email|add_class:"form-control" }}
         </div>
 
-        <!-- ✅ Check-in Date -->
+        <!-- Check-in Date -->
         <div class="mb-3">
           <label class="form-label">Check-in Date</label>
           {{ form.checkin_date|add_class:"form-control" }}
         </div>
 
-        <!-- ✅ Check-out Date -->
+        <!-- check-out Date -->
         <div class="mb-3">
           <label class="form-label">Check-out Date</label>
           {{ form.checkout_date|add_class:"form-control" }}
@@ -79,7 +79,7 @@
   </div>
 </div>
 
-<!-- ✅ Date logic script -->
+<!-- Date logic script -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   const today = new Date().toISOString().split("T")[0];

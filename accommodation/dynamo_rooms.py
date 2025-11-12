@@ -2,46 +2,48 @@ import boto3
 from decimal import Decimal
 import uuid
 
-# ✅ Initialize DynamoDB connection
+# Initiating dynamoDB connection to store the room details in the dynamoDB
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
-# ✅ Reference your DynamoDB table
-rooms_table = dynamodb.Table('Rooms')  # change name if your table is different
+# Refering the room table name that is created inside dynmoDB
+# I have implemented a helper function to create a dynamoDB table with same if it doesnot exist
+rooms_table = dynamodb.Table('Rooms') 
 
 
-# ✅ Fetch all rooms
+# Here we are fetching all the rooms that is stored inside the dynamoDB table
 def get_all_rooms():
-    """Fetch all rooms from DynamoDB"""
+    
     response = rooms_table.scan()
     return response.get('Items', [])
 
 
-# ✅ Fetch a single room
+# Here we are fetching the specific rooms that is stored inside the dynamoDB table
 def get_room_from_dynamo(room_id):
     """Fetch a specific room by ID"""
     response = rooms_table.get_item(Key={'room_id': room_id})
     return response.get('Item')
 
 
-# ✅ Add a new room (supports S3 images)
+# The below function helps to add the room details to the dynamoDB 
 def add_room_to_dynamo(name, capacity, price, image_urls=None):
-    """Add a new room record to DynamoDB with optional S3 image URLs"""
+    
     from decimal import Decimal, InvalidOperation
 
     room_id = str(uuid.uuid4())
 
-    # ✅ Handle empty or invalid price safely
+    
     try:
         price_value = Decimal(str(price)) if str(price).strip() != '' else Decimal('0.00')
     except (InvalidOperation, TypeError, ValueError):
         price_value = Decimal('0.00')
 
-    # ✅ Handle missing or invalid capacity safely
+    
     try:
         capacity_value = int(capacity)
     except (TypeError, ValueError):
         capacity_value = 0
 
+#creating proper fields to store the room details in the dynamoDB
     item = {
         'room_id': room_id,
         'name': name or "Unnamed Room",
@@ -51,18 +53,19 @@ def add_room_to_dynamo(name, capacity, price, image_urls=None):
         'images': image_urls or []
     }
 
+# Inserting the room details in to the dynamoDB room table
     rooms_table.put_item(Item=item)
-    print("✅ Room added successfully to DynamoDB:", item)
+    # print("room added successfully to DynamoDB:", item)
     return room_id
 
 
 
-# ✅ Update room details
+# The below function helps when a manager updates a room, the details will be stored in dynamoDB
 def update_room_in_dynamo(room_id, name, capacity, price):
-    """Update room details (name, capacity, price, availability)"""
+    """Updating the following room details (name, capacity, price, availability)"""
     capacity = int(capacity)
     price = Decimal(str(price))
-    available = capacity > 0
+    available = capacity >=0
 
     response = rooms_table.update_item(
         Key={'room_id': room_id},
@@ -82,7 +85,7 @@ def update_room_in_dynamo(room_id, name, capacity, price):
     return response
 
 
-# ✅ Update or remove image URLs
+# To update or remove image URLs
 def update_room_images_in_dynamo(room_id, image_urls=None, remove=False):
     """
     Add or remove S3 image URLs from a room's 'images' list.
@@ -122,7 +125,7 @@ def update_room_images_in_dynamo(room_id, image_urls=None, remove=False):
     return response
 
 
-# ✅ Delete a room
+# To Dlete a room
 def delete_room_from_dynamo(room_id):
     """Delete a room record from DynamoDB"""
     response = rooms_table.delete_item(Key={'room_id': room_id})

@@ -1,6 +1,6 @@
 
 
-# Register your models here.
+# Registering all the models used in the project.
 from django.contrib import admin
 from .models import Room, Booking,RoomImage
 from .models import Profile
