@@ -7,9 +7,9 @@ def D(value):
     return Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
-# ======================================================
+
   #  FESTIVAL DISCOUNT
-# ======================================================
+
 def apply_festival_discount(price, event=None):
     if not isinstance(price, Decimal):
         price = D(price)
@@ -27,9 +27,8 @@ def apply_festival_discount(price, event=None):
     return discounted_price, discount * 100, reason
 
 
-# ======================================================
- #WEEKEND DISCOUNT
-# ======================================================
+
+ #Calculating weekend discount
 def apply_weekend_discount(price):
     if not isinstance(price, Decimal):
         price = D(price)
@@ -41,9 +40,8 @@ def apply_weekend_discount(price):
         return price, D("0"), None
 
 
-# ======================================================
-#  LONG-STAY DISCOUNT
-# ======================================================
+#  logic for long stay discount
+
 def apply_longstay_discount(price, days):
     """
     Apply discount for longer stays.
@@ -67,9 +65,9 @@ def apply_longstay_discount(price, days):
     return discounted_price, discount * 100, reason
 
 
-# ======================================================
-#  FINAL COMBINED CALCULATION
-# ======================================================
+
+#  Final combined calculation
+
 def calculate_final_price(base_price, event=None, days=1):
     """
     Safely apply Festival + Weekend + Long-Stay discounts.
