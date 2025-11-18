@@ -50,13 +50,13 @@
 
   <!--  Page Title -->
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-gradient">📊 Manager Dashboard</h2>
+    <h2 class="fw-bold text-gradient">Manager Dashboard</h2>
   </div>
 
   <!--  Analytics Chart Section -->
  <div class="card chart-card mb-4">
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-    <h5 class="fw-bold text-secondary mb-2">📈 Room & Booking Overview</h5>
+    <h5 class="fw-bold text-secondary mb-2"> Room & Booking Overview</h5>
     <select class="form-select w-auto shadow-sm" onchange="changeChartType(this.value)">
       <option value="bar" selected>Bar Chart</option>
       <option value="pie">Pie Chart</option>
@@ -98,7 +98,7 @@
   <div id="rooms" class="card shadow-sm border-0 mb-4">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold text-secondary">🏠 Rooms</h5>
+        <h5 class="fw-bold text-secondary"> Rooms</h5>
         <a href="{% url 'add_room' %}" class="btn btn-sm btn-primary">
           <i class="bi bi-plus-lg me-1"></i> Add Room
         </a>
@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let chartInstance;
 
   function createGradients(ctx) {
-    // ✅ Create three smooth vertical gradients for the bars
+    // create three smooth vertical gradients for the bars
     const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
     gradient1.addColorStop(0, "rgba(0, 172, 193, 0.9)");   // light teal
     gradient1.addColorStop(1, "rgba(0, 92, 151, 0.9)");   // dark teal-blue
@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // ✅ full-width control
+        maintainAspectRatio: false, // ull-width control
         resizeDelay: 200,
         layout: {
           padding: { left: 0, right: 0, top: 20, bottom: 10 }
