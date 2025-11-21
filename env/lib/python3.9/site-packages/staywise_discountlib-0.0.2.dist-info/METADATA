@@ -1,0 +1,22 @@
+Metadata-Version: 2.4
+Name: staywise-discountlib
+Version: 0.0.2
+Summary: A reusable library for StayWise project with festival, weekend, and long-stay discount logic.
+Author-email: Shridharan M <your.email@example.com>
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+
+# staywiselib-shridharan
+
+This is a custom Python library used in the StayWise project.
+It calculates discounts based on festival, weekend, and long-stay pricing.
+
+## Example
+```python
+from staywiselib.pricing import apply_festival_discount
+
+price, discount, reason = apply_festival_discount(1000, event="Diwali")
+print(price, discount, reason)

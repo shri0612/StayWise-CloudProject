@@ -37,7 +37,7 @@ A customer named {name} ({email}) has made a booking through StayWise.
 Please check your StayWise Manager Dashboard for more details.
 """
 
-            topic_arn = "arn:aws:sns:us-east-1:746813293947:staywise-bookings"  
+            topic_arn = "arn:aws:sns:us-east-1:389082786773:staywise-bookings"
 
             response = sns.publish(
                 TopicArn=topic_arn,
