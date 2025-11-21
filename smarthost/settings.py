@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-&jji!=w9t7#ew82drb@2#r)0z(f(b)w&&j%^1(ir8oh_w5!1l+
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'staywise-env.eba-nznpmhhm.us-east-1.elasticbeanstalk.com',
+    'staywise-env.eba-kcjfzndv.us-east-1.elasticbeanstalk.com',
     '127.0.0.1',
     'localhost'
 ]
