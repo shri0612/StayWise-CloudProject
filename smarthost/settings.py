@@ -137,7 +137,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # -------------------------
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-AWS_SESSION_TOKEN = os.environ.get("AWS_SESSION_TOKEN")   # Required in Learner Lab
+AWS_SESSION_TOKEN = os.environ.get("AWS_SESSION_TOKEN")
 
 AWS_STORAGE_BUCKET_NAME = "studentaccommodation-media-shridharan"
 AWS_S3_REGION_NAME = "us-east-1"
@@ -146,17 +146,13 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True
 
-# 🔥 Enable Signed URLs (this removes AccessDenied)
 AWS_QUERYSTRING_AUTH = True
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_S3_ADDRESSING_STYLE = "virtual"
 
-# Use S3 for media
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
-# 🔥 IMPORTANT: Do NOT set MEDIA_URL manually
-# Let S3 storage generate signed URLs automatically
-MEDIA_URL = ""
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
 
 # -------------------------
 # AUTH
